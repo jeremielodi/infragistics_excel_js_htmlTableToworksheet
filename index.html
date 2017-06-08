@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<!-- saved from url=(0081)http://congoschoolmanager.dev/app/Modules/inscription/excel_js/grid_to_excel.html -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+    <title></title>
+
+   <style>
+        .right {
+            float: right;
+        }
+
+        #exportButton {
+            float: left;
+        }
+		table{
+		box-shadow:1px 2px 3px #001; background:#aaa;
+		}
+		th, td{
+		background:#fff;
+		}
+		
+    </style>
+    <!--Required scripts-->
+    <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <!-- External files for exporting -->
+    <script src="https://www.igniteui.com/js/external/FileSaver.js"></script>
+    <script src="https://www.igniteui.com/js/external/Blob.js"></script>
+
+    <!-- Ignite UI Loader Script -->
+    <script src="http://cdn-na.infragistics.com/igniteui/2016.2/latest/js/infragistics.loader.js"></script>
+
+    <script>
+        $.ig.loader({
+            scriptPath: "http://cdn-na.infragistics.com/igniteui/2016.2/latest/js/",
+            cssPath: "http://cdn-na.infragistics.com/igniteui/2016.2/latest/css/",
+            resources: 'modules/infragistics.util.js,' +
+                       'modules/infragistics.documents.core.js,' +
+                       'modules/infragistics.excel.js'
+        });
+        </script>
+
+		
+ 
+		
+        <script>
+
+	 
+		//this function has index as parameter , index is the column number in the sheet, it return for example if index=0; return A, if index=26 return AA
+		function getNumCol(index){
+			var cols=["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
+			  
+			if(index>cols.length-1){
+			/*
+				if(index==cols.length){//26
+				return cols[0]+cols[0];
+				}
+				*/
+				
+				var nb_div=index/(cols.length);
+				var nTurn=Math.floor(nb_div);
+				var str="";
+				 for(i=0;i<nTurn;i++){
+				 str+=cols[0];
+				 }
+				 
+				var mod=index%(cols.length);
+				 
+				return str+cols[mod];
+				
+			}else{
+			   return cols[index];
+			}
+        }
+		  
+		 function createHtmlTableWorkbook(table_id) {
+
+            var workbook = new $.ig.excel.Workbook($.ig.excel.WorkbookFormat.excel2007);
+            var sheet = workbook.worksheets().add('Sheet1'); 
+			
+					
+			var i=0;
+			var j=1;
+			//number of columns
+			var nCol=$('#' + table_id + ' thead tr').children().length;
+			//number of lines
+			var nLine=$('#' + table_id + ' tbody tr').children().length;
+			
+			//headers
+			$('#' + table_id + ' thead tr').children().each(function() {
+				 
+				sheet.columns(i).setWidth($(this).width()+10, $.ig.excel.WorksheetColumnWidthUnit.pixel); 
+			    sheet.getCell(getNumCol(i)+j).value($(this).html());
+				i++;
+            });
+			   
+            var table = sheet.tables().add('A1:'+getNumCol(i)+nLine, true);
+
+            // Specify the style to use in the table (this can also be specified as an optional 3rd argument to the 'add' call above).
+           table.style(workbook.standardTableStyles('TableStyleMedium2'))
+
+            // Populate the table with data from tbody
+			 
+			i=0; //second line
+			var j=2;
+			$('#' + table_id + ' tbody tr').each(function() {
+					 				
+		       $(this).children().each(function() {
+				 sheet.getCell(getNumCol(i)+j).value($(this).html());
+				 i++;
+               });
+			   
+               j++;//new line
+			   i=0;//first col
+            });
+             
+             
+            // Save the workbook
+            saveWorkbook(workbook, "Table.xlsx");
+        }
+
+		
+		
+        function createTableWorkbook() {
+
+            var workbook = new $.ig.excel.Workbook($.ig.excel.WorkbookFormat.excel2007);
+            var sheet = workbook.worksheets().add('Sheet1'); 
+			
+            sheet.columns(0).setWidth(72, $.ig.excel.WorksheetColumnWidthUnit.pixel);
+            sheet.columns(1).setWidth(160, $.ig.excel.WorksheetColumnWidthUnit.pixel);
+            sheet.columns(2).setWidth(110, $.ig.excel.WorksheetColumnWidthUnit.pixel);
+            sheet.columns(3).setWidth(275, $.ig.excel.WorksheetColumnWidthUnit.pixel);
+
+            // Create a to-do list table with columns for tasks and their priorities.
+            sheet.getCell('A1').value('ID');
+            sheet.getCell('B1').value('Applicant');
+            sheet.getCell('C1').value('Status');
+            sheet.getCell('D1').value('Comment');
+            var table = sheet.tables().add('A1:D8', true);
+
+            // Specify the style to use in the table (this can also be specified as an optional 3rd argument to the 'add' call above).
+            table.style(workbook.standardTableStyles('TableStyleMedium2'))
+
+            // Populate the table with data
+            sheet.getCell('A2').value(3223);
+            sheet.getCell('B2').value('Jack Banner');
+            sheet.getCell('C2').value('Approved');
+            sheet.getCell('D2').value('');
+
+            sheet.getCell('A3').value(3224);
+            sheet.getCell('B3').value('Armin Barrywater');
+            sheet.getCell('C3').value('In Review');
+            sheet.getCell('D3').value('Underwriter is out until next week.');
+
+            sheet.getCell('A4').value(3225);
+            sheet.getCell('B4').value('Shiela Donahue');
+            sheet.getCell('C4').value('In Review');
+            sheet.getCell('D4').value('');
+
+            sheet.getCell('A5').value(3226);
+            sheet.getCell('B5').value('Perry Kane');
+            sheet.getCell('C5').value('On Hold');
+            sheet.getCell('D5').value('Waiting on paperwork from customer.');
+
+            sheet.getCell('A6').value(3235);
+            sheet.getCell('B6').value('Xavier Fannello');
+            sheet.getCell('C6').value('New');
+            sheet.getCell('D6').value('');
+
+            sheet.getCell('A7').value(3244);
+            sheet.getCell('B7').value('Georgi Angelchov');
+            sheet.getCell('C7').value('New');
+            sheet.getCell('D7').value('');
+
+            sheet.getCell('A8').value(3257);
+            sheet.getCell('B8').value('Imelda Sanchez');
+            sheet.getCell('C8').value('New');
+            sheet.getCell('D8').value('');
+
+            // Sort the table by the Applicant column
+            table.columns('Applicant').sortCondition(new $.ig.excel.OrderedSortCondition());
+
+            // Filter out the Approved applicants
+            table.columns('Status').applyCustomFilter(new $.ig.excel.CustomFilterCondition($.ig.excel.ExcelComparisonOperator.notEqual, 'Approved'));
+
+            // Save the workbook
+            saveWorkbook(workbook, "Table.xlsx");
+        }
+
+        function saveWorkbook(workbook, name) {
+            workbook.save({ type: 'blob' }, function (data) {
+                saveAs(data, name);
+            }, function (error) {
+                alert('Error exporting: : ' + error);
+            });
+        }
+
+    </script>
+
+</head>
+	<body>
+		<br>
+		<button id="exportButton" onclick="createTableWorkbook()">Create File</button>
+		<button id="exportButton" onclick="createHtmlTableWorkbook('example')">Create File from html</button>
+		
+		<br>
+		
+		
+		<table class="table tabl table-bordered  table-striped table-hover" style="margin-top:10px;" id="example">
+
+                            <thead>
+                                <tr>
+                                    <th width="30">#</th>
+
+                                    <th>Nom</th>
+                                    <th>Postnom</th>
+                                    <th>Prenom</th>
+                                    <th width="30">Sexe</th> 
+                                    <th>Lieu et date de naissance</th>
+                                    <th>Ecole de provenance</th> 
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- ngRepeat: eleve in liste_eleves| filter : recherche_nom --><tr ng-repeat="eleve in liste_eleves| filter : recherche_nom" class="ng-scope">
+                                    <td class="ng-binding">1</td>
+                                    <td class="ng-binding">ALEMA</td>
+                                    <td class="ng-binding">MOFALI</td>
+                                    <td class="ng-binding"></td>
+                                    <td class="ng-binding">M</td> 
+                                    <td class="ng-binding">, 07/11/2016</td>
+                                    <td class="ng-binding"></td> 
+
+
+                                    <!-- ngIf: modifs == false -->
+
+                                    <!-- ngIf: modifs == false -->
+
+
+                                </tr><!-- end ngRepeat: eleve in liste_eleves| filter : recherche_nom --><tr ng-repeat="eleve in liste_eleves| filter : recherche_nom" class="ng-scope">
+                                    <td class="ng-binding">2</td>
+                                    <td class="ng-binding">BALELA</td>
+                                    <td class="ng-binding">KAPINGA</td>
+                                    <td class="ng-binding"></td>
+                                    <td class="ng-binding">F</td> 
+                                    <td class="ng-binding">, 07/11/2016</td>
+                                    <td class="ng-binding"></td> 
+
+
+                                    <!-- ngIf: modifs == false -->
+
+                                    <!-- ngIf: modifs == false -->
+
+
+                                </tr><!-- end ngRepeat: eleve in liste_eleves| filter : recherche_nom --><tr ng-repeat="eleve in liste_eleves| filter : recherche_nom" class="ng-scope">
+                                    <td class="ng-binding">3</td>
+                                    <td class="ng-binding">BAOYI</td>
+                                    <td class="ng-binding">BAFAMBEMBE</td>
+                                    <td class="ng-binding"></td>
+                                    <td class="ng-binding">M </td> 
+                                    <td class="ng-binding">, 07/11/2016</td>
+                                    <td class="ng-binding"></td> 
+
+
+                                    <!-- ngIf: modifs == false -->
+
+                                    <!-- ngIf: modifs == false -->
+
+
+                                </tr><!-- end ngRepeat: eleve in liste_eleves| filter : recherche_nom --><tr ng-repeat="eleve in liste_eleves| filter : recherche_nom" class="ng-scope">
+                                    <td class="ng-binding">4</td>
+                                    <td class="ng-binding">BESALA</td>
+                                    <td class="ng-binding">ESIWA</td>
+                                    <td class="ng-binding"></td>
+                                    <td class="ng-binding">M </td> 
+                                    <td class="ng-binding">, 07/11/2016</td>
+                                    <td class="ng-binding"></td> 
+
+
+                                    <!-- ngIf: modifs == false -->
+
+                                    <!-- ngIf: modifs == false -->
+
+
+                                </tr><!-- end ngRepeat: eleve in liste_eleves| filter : recherche_nom --><tr ng-repeat="eleve in liste_eleves| filter : recherche_nom" class="ng-scope">
+                                    <td class="ng-binding">5</td>
+                                    <td class="ng-binding">BOLOMBE</td>
+                                    <td class="ng-binding">BINTA</td>
+                                    <td class="ng-binding"></td>
+                                    <td class="ng-binding">F</td> 
+                                    <td class="ng-binding">, 07/11/2016</td>
+                                    <td class="ng-binding"></td> 
+
+
+                                    <!-- ngIf: modifs == false -->
+
+                                    <!-- ngIf: modifs == false -->
+
+
+                                </tr><!-- end ngRepeat: eleve in liste_eleves| filter : recherche_nom --><tr ng-repeat="eleve in liste_eleves| filter : recherche_nom" class="ng-scope">
+                                    <td class="ng-binding">6</td>
+                                    <td class="ng-binding">BONKONO</td>
+                                    <td class="ng-binding">ELIMA</td>
+                                    <td class="ng-binding"></td>
+                                    <td class="ng-binding">M</td> 
+                                    <td class="ng-binding">, 07/11/2016</td>
+                                    <td class="ng-binding"></td> 
+
+
+                                    <!-- ngIf: modifs == false -->
+
+                                    <!-- ngIf: modifs == false -->
+
+
+                                </tr><!-- end ngRepeat: eleve in liste_eleves| filter : recherche_nom --><tr ng-repeat="eleve in liste_eleves| filter : recherche_nom" class="ng-scope">
+                                    <td class="ng-binding">7</td>
+                                    <td class="ng-binding">DECOELHO</td>
+                                    <td class="ng-binding">MUKENDI</td>
+                                    <td class="ng-binding"></td>
+                                    <td class="ng-binding">F </td> 
+                                    <td class="ng-binding">, 07/11/2016</td>
+                                    <td class="ng-binding"></td> 
+
+
+                                    <!-- ngIf: modifs == false -->
+
+                                    <!-- ngIf: modifs == false -->
+
+
+                                </tr><!-- end ngRepeat: eleve in liste_eleves| filter : recherche_nom --><tr ng-repeat="eleve in liste_eleves| filter : recherche_nom" class="ng-scope">
+                                    <td class="ng-binding">8</td>
+                                    <td class="ng-binding">DEDJIGILA</td>
+                                    <td class="ng-binding">MUSAMBAYI</td>
+                                    <td class="ng-binding"></td>
+                                    <td class="ng-binding">M </td> 
+                                    <td class="ng-binding">, 07/11/2016</td>
+                                    <td class="ng-binding"></td> 
+
+
+                                    <!-- ngIf: modifs == false -->
+
+                                    <!-- ngIf: modifs == false -->
+
+
+                                </tr><!-- end ngRepeat: eleve in liste_eleves| filter : recherche_nom --><tr ng-repeat="eleve in liste_eleves| filter : recherche_nom" class="ng-scope">
+                                    <td class="ng-binding">9</td>
+                                    <td class="ng-binding">DIANGITUKULU</td>
+                                    <td class="ng-binding">YAWAZA</td>
+                                    <td class="ng-binding"></td>
+                                    <td class="ng-binding">M </td> 
+                                    <td class="ng-binding">, 07/11/2016</td>
+                                    <td class="ng-binding"></td> 
+
+
+                                    <!-- ngIf: modifs == false -->
+
+                                    <!-- ngIf: modifs == false -->
+
+
+                                </tr><!-- end ngRepeat: eleve in liste_eleves| filter : recherche_nom --><tr ng-repeat="eleve in liste_eleves| filter : recherche_nom" class="ng-scope">
+                                    <td class="ng-binding">10</td>
+                                    <td class="ng-binding">EFOLI</td>
+                                    <td class="ng-binding">BELENGO</td>
+                                    <td class="ng-binding"></td>
+                                    <td class="ng-binding">F </td> 
+                                    <td class="ng-binding">, 07/11/2016</td>
+                                    <td class="ng-binding"></td> 
+
+
+                                    <!-- ngIf: modifs == false -->
+
+                                    <!-- ngIf: modifs == false -->
+
+
+                                </tr><!-- end ngRepeat: eleve in liste_eleves| filter : recherche_nom --><tr ng-repeat="eleve in liste_eleves| filter : recherche_nom" class="ng-scope">
+                                    <td class="ng-binding">11</td>
+                                    <td class="ng-binding">FILA</td>
+                                    <td class="ng-binding">NGIMBI</td>
+                                    <td class="ng-binding"></td>
+                                    <td class="ng-binding">M </td> 
+                                    <td class="ng-binding">, 07/11/2016</td>
+                                    <td class="ng-binding"></td> 
+
+
+                                    <!-- ngIf: modifs == false -->
+
+                                    <!-- ngIf: modifs == false -->
+
+
+                                </tr><!-- end ngRepeat: eleve in liste_eleves| filter : recherche_nom --><tr ng-repeat="eleve in liste_eleves| filter : recherche_nom" class="ng-scope">
+                                    <td class="ng-binding">12</td>
+                                    <td class="ng-binding">GBOUKOUNGOU</td>
+                                    <td class="ng-binding">SANZIA</td>
+                                    <td class="ng-binding"></td>
+                                    <td class="ng-binding">M </td> 
+                                    <td class="ng-binding">, 07/11/2016</td>
+                                    <td class="ng-binding"></td> 
+
+
+                                    <!-- ngIf: modifs == false -->
+
+                                    <!-- ngIf: modifs == false -->
+
+
+                                </tr><!-- end ngRepeat: eleve in liste_eleves| filter : recherche_nom --><tr ng-repeat="eleve in liste_eleves| filter : recherche_nom" class="ng-scope">
+                                    <td class="ng-binding">13</td>
+                                    <td class="ng-binding">IBUTUA</td>
+                                    <td class="ng-binding">TOBI</td>
+                                    <td class="ng-binding"></td>
+                                    <td class="ng-binding">M </td> 
+                                    <td class="ng-binding">, 07/11/2016</td>
+                                    <td class="ng-binding"></td> 
+
+
+                                    <!-- ngIf: modifs == false -->
+
+                                    <!-- ngIf: modifs == false -->
+
+
+                                </tr><!-- end ngRepeat: eleve in liste_eleves| filter : recherche_nom --><tr ng-repeat="eleve in liste_eleves| filter : recherche_nom" class="ng-scope">
+                                    <td class="ng-binding">14</td>
+                                    <td class="ng-binding">KABALA</td>
+                                    <td class="ng-binding">KASONGO</td>
+                                    <td class="ng-binding"></td>
+                                    <td class="ng-binding">F </td> 
+                                    <td class="ng-binding">, 07/11/2016</td>
+                                    <td class="ng-binding"></td> 
+
+
+                                    <!-- ngIf: modifs == false -->
+
+                                    <!-- ngIf: modifs == false -->
+
+
+                                </tr><!-- end ngRepeat: eleve in liste_eleves| filter : recherche_nom --><tr ng-repeat="eleve in liste_eleves| filter : recherche_nom" class="ng-scope">
+                                    <td class="ng-binding">15</td>
+                                    <td class="ng-binding">KABOKO</td>
+                                    <td class="ng-binding">TSHITEYA</td>
+                                    <td class="ng-binding"></td>
+                                    <td class="ng-binding">F</td> 
+                                    <td class="ng-binding">, 07/11/2016</td>
+                                    <td class="ng-binding"></td> 
+
+
+                                    <!-- ngIf: modifs == false -->
+
+                                    <!-- ngIf: modifs == false -->
+
+
+                                </tr><!-- end ngRepeat: eleve in liste_eleves| filter : recherche_nom --><tr ng-repeat="eleve in liste_eleves| filter : recherche_nom" class="ng-scope">
+                                    <td class="ng-binding">16</td>
+                                    <td class="ng-binding">KAJ</td>
+                                    <td class="ng-binding">DITEND</td>
+                                    <td class="ng-binding"></td>
+                                    <td class="ng-binding">M </td> 
+                                    <td class="ng-binding">, 01/11/2016</td>
+                                    <td class="ng-binding"></td> 
+
+
+                                    <!-- ngIf: modifs == false -->
+
+                                    <!-- ngIf: modifs == false -->
+
+
+                                </tr><!-- end ngRepeat: eleve in liste_eleves| filter : recherche_nom --><tr ng-repeat="eleve in liste_eleves| filter : recherche_nom" class="ng-scope">
+                                    <td class="ng-binding">17</td>
+                                    <td class="ng-binding">KAMEMBO</td>
+                                    <td class="ng-binding">DIBENESHA</td>
+                                    <td class="ng-binding"></td>
+                                    <td class="ng-binding">M </td> 
+                                    <td class="ng-binding">, 31/10/2016</td>
+                                    <td class="ng-binding"></td> 
+
+
+                                    <!-- ngIf: modifs == false -->
+
+                                    <!-- ngIf: modifs == false -->
+
+
+                                </tr><!-- end ngRepeat: eleve in liste_eleves| filter : recherche_nom --><tr ng-repeat="eleve in liste_eleves| filter : recherche_nom" class="ng-scope">
+                                    <td class="ng-binding">18</td>
+                                    <td class="ng-binding">KASEREKA</td>
+                                    <td class="ng-binding">VIRENGE</td>
+                                    <td class="ng-binding"></td>
+                                    <td class="ng-binding">M </td> 
+                                    <td class="ng-binding">, 07/11/2016</td>
+                                    <td class="ng-binding"></td> 
+
+
+                                    <!-- ngIf: modifs == false -->
+
+                                    <!-- ngIf: modifs == false -->
+
+
+                                </tr><!-- end ngRepeat: eleve in liste_eleves| filter : recherche_nom --><tr ng-repeat="eleve in liste_eleves| filter : recherche_nom" class="ng-scope">
+                                    <td class="ng-binding">19</td>
+                                    <td class="ng-binding">KASONGA</td>
+                                    <td class="ng-binding">MBUNGA</td>
+                                    <td class="ng-binding"></td>
+                                    <td class="ng-binding">F </td> 
+                                    <td class="ng-binding">, 31/10/2016</td>
+                                    <td class="ng-binding"></td> 
+
+
+                                    <!-- ngIf: modifs == false -->
+
+                                    <!-- ngIf: modifs == false -->
+
+
+                                </tr><!-- end ngRepeat: eleve in liste_eleves| filter : recherche_nom --><tr ng-repeat="eleve in liste_eleves| filter : recherche_nom" class="ng-scope">
+                                    <td class="ng-binding">20</td>
+                                    <td class="ng-binding">KASONGA</td>
+                                    <td class="ng-binding">LOSANGA</td>
+                                    <td class="ng-binding"></td>
+                                    <td class="ng-binding">M </td> 
+                                    <td class="ng-binding">, 07/11/2016</td>
+                                    <td class="ng-binding"></td> 
+
+
+                                    <!-- ngIf: modifs == false -->
+
+                                    <!-- ngIf: modifs == false -->
+
+
+                                </tr><!-- end ngRepeat: eleve in liste_eleves| filter : recherche_nom --><tr ng-repeat="eleve in liste_eleves| filter : recherche_nom" class="ng-scope">
+                                    <td class="ng-binding">21</td>
+                                    <td class="ng-binding">LISASI</td>
+                                    <td class="ng-binding">BOMETO</td>
+                                    <td class="ng-binding"></td>
+                                    <td class="ng-binding">M </td> 
+                                    <td class="ng-binding">, 07/11/2016</td>
+                                    <td class="ng-binding"></td> 
+
+
+                                    <!-- ngIf: modifs == false -->
+
+                                    <!-- ngIf: modifs == false -->
+
+
+                                </tr><!-- end ngRepeat: eleve in liste_eleves| filter : recherche_nom --><tr ng-repeat="eleve in liste_eleves| filter : recherche_nom" class="ng-scope">
+                                    <td class="ng-binding">22</td>
+                                    <td class="ng-binding">LUKOMBO</td>
+                                    <td class="ng-binding">TUKU</td>
+                                    <td class="ng-binding"></td>
+                                    <td class="ng-binding">M </td> 
+                                    <td class="ng-binding">, 08/11/2016</td>
+                                    <td class="ng-binding"></td> 
+
+
+                                    <!-- ngIf: modifs == false -->
+
+                                    <!-- ngIf: modifs == false -->
+
+
+                                </tr><!-- end ngRepeat: eleve in liste_eleves| filter : recherche_nom --><tr ng-repeat="eleve in liste_eleves| filter : recherche_nom" class="ng-scope">
+                                    <td class="ng-binding">23</td>
+                                    <td class="ng-binding">MATADI</td>
+                                    <td class="ng-binding">MAMPUDIWALA</td>
+                                    <td class="ng-binding"></td>
+                                    <td class="ng-binding">M </td> 
+                                    <td class="ng-binding">, 07/11/2016</td>
+                                    <td class="ng-binding"></td> 
+
+
+                                    <!-- ngIf: modifs == false -->
+
+                                    <!-- ngIf: modifs == false -->
+
+
+                                </tr><!-- end ngRepeat: eleve in liste_eleves| filter : recherche_nom --><tr ng-repeat="eleve in liste_eleves| filter : recherche_nom" class="ng-scope">
+                                    <td class="ng-binding">24</td>
+                                    <td class="ng-binding">MBELENE </td>
+                                    <td class="ng-binding">DALE</td>
+                                    <td class="ng-binding"></td>
+                                    <td class="ng-binding">M </td> 
+                                    <td class="ng-binding">, 08/11/2016</td>
+                                    <td class="ng-binding"></td> 
+
+
+                                    <!-- ngIf: modifs == false -->
+
+                                    <!-- ngIf: modifs == false -->
+
+
+                                </tr><!-- end ngRepeat: eleve in liste_eleves| filter : recherche_nom --><tr ng-repeat="eleve in liste_eleves| filter : recherche_nom" class="ng-scope">
+                                    <td class="ng-binding">25</td>
+                                    <td class="ng-binding">MBEMBO</td>
+                                    <td class="ng-binding">YULU</td>
+                                    <td class="ng-binding"></td>
+                                    <td class="ng-binding">M </td> 
+                                    <td class="ng-binding">, 09/11/2016</td>
+                                    <td class="ng-binding"></td> 
+
+
+                                    <!-- ngIf: modifs == false -->
+
+                                    <!-- ngIf: modifs == false -->
+
+
+                                </tr><!-- end ngRepeat: eleve in liste_eleves| filter : recherche_nom --><tr ng-repeat="eleve in liste_eleves| filter : recherche_nom" class="ng-scope">
+                                    <td class="ng-binding">26</td>
+                                    <td class="ng-binding">MBIKALE </td>
+                                    <td class="ng-binding">MUSONGELA</td>
+                                    <td class="ng-binding"></td>
+                                    <td class="ng-binding">F </td> 
+                                    <td class="ng-binding">, 08/11/2016</td>
+                                    <td class="ng-binding"></td> 
+
+
+                                    <!-- ngIf: modifs == false -->
+
+                                    <!-- ngIf: modifs == false -->
+
+
+                                </tr><!-- end ngRepeat: eleve in liste_eleves| filter : recherche_nom --><tr ng-repeat="eleve in liste_eleves| filter : recherche_nom" class="ng-scope">
+                                    <td class="ng-binding">27</td>
+                                    <td class="ng-binding">MBONGO</td>
+                                    <td class="ng-binding">NA SONIA</td>
+                                    <td class="ng-binding"></td>
+                                    <td class="ng-binding">F </td> 
+                                    <td class="ng-binding">, 08/11/2016</td>
+                                    <td class="ng-binding"></td> 
+
+
+                                    <!-- ngIf: modifs == false -->
+
+                                    <!-- ngIf: modifs == false -->
+
+
+                                </tr><!-- end ngRepeat: eleve in liste_eleves| filter : recherche_nom --><tr ng-repeat="eleve in liste_eleves| filter : recherche_nom" class="ng-scope">
+                                    <td class="ng-binding">28</td>
+                                    <td class="ng-binding">MBUYI</td>
+                                    <td class="ng-binding">KABONGO</td>
+                                    <td class="ng-binding"></td>
+                                    <td class="ng-binding">M </td> 
+                                    <td class="ng-binding">, 08/11/2016</td>
+                                    <td class="ng-binding"></td> 
+
+
+                                    <!-- ngIf: modifs == false -->
+
+                                    <!-- ngIf: modifs == false -->
+
+
+                                </tr><!-- end ngRepeat: eleve in liste_eleves| filter : recherche_nom --><tr ng-repeat="eleve in liste_eleves| filter : recherche_nom" class="ng-scope">
+                                    <td class="ng-binding">29</td>
+                                    <td class="ng-binding">MONGA</td>
+                                    <td class="ng-binding">KYUNGU</td>
+                                    <td class="ng-binding"></td>
+                                    <td class="ng-binding">M </td> 
+                                    <td class="ng-binding">, 08/11/2016</td>
+                                    <td class="ng-binding"></td> 
+
+
+                                    <!-- ngIf: modifs == false -->
+
+                                    <!-- ngIf: modifs == false -->
+
+
+                                </tr><!-- end ngRepeat: eleve in liste_eleves| filter : recherche_nom --><tr ng-repeat="eleve in liste_eleves| filter : recherche_nom" class="ng-scope">
+                                    <td class="ng-binding">30</td>
+                                    <td class="ng-binding">MUCHUBA</td>
+                                    <td class="ng-binding">BUHEREKO</td>
+                                    <td class="ng-binding"></td>
+                                    <td class="ng-binding">M </td> 
+                                    <td class="ng-binding">, 07/11/2016</td>
+                                    <td class="ng-binding"></td> 
+
+
+                                    <!-- ngIf: modifs == false -->
+
+                                    <!-- ngIf: modifs == false -->
+
+
+                                </tr><!-- end ngRepeat: eleve in liste_eleves| filter : recherche_nom --><tr ng-repeat="eleve in liste_eleves| filter : recherche_nom" class="ng-scope">
+                                    <td class="ng-binding">31</td>
+                                    <td class="ng-binding">MUDISUNGU</td>
+                                    <td class="ng-binding">NKI BENI</td>
+                                    <td class="ng-binding"></td>
+                                    <td class="ng-binding">F </td> 
+                                    <td class="ng-binding">, 07/11/2016</td>
+                                    <td class="ng-binding"></td> 
+
+
+                                    <!-- ngIf: modifs == false -->
+
+                                    <!-- ngIf: modifs == false -->
+
+
+                                </tr><!-- end ngRepeat: eleve in liste_eleves| filter : recherche_nom --><tr ng-repeat="eleve in liste_eleves| filter : recherche_nom" class="ng-scope">
+                                    <td class="ng-binding">32</td>
+                                    <td class="ng-binding">MUMBA</td>
+                                    <td class="ng-binding">INAKAHINDA</td>
+                                    <td class="ng-binding"></td>
+                                    <td class="ng-binding">F </td> 
+                                    <td class="ng-binding">, 07/11/2016</td>
+                                    <td class="ng-binding"></td> 
+
+
+                                    <!-- ngIf: modifs == false -->
+
+                                    <!-- ngIf: modifs == false -->
+
+
+                                </tr><!-- end ngRepeat: eleve in liste_eleves| filter : recherche_nom --><tr ng-repeat="eleve in liste_eleves| filter : recherche_nom" class="ng-scope">
+                                    <td class="ng-binding">33</td>
+                                    <td class="ng-binding">MUSHIYA</td>
+                                    <td class="ng-binding">MUTOMBO</td>
+                                    <td class="ng-binding"></td>
+                                    <td class="ng-binding">M </td> 
+                                    <td class="ng-binding">, 07/11/2016</td>
+                                    <td class="ng-binding"></td> 
+
+
+                                    <!-- ngIf: modifs == false -->
+
+                                    <!-- ngIf: modifs == false -->
+
+
+                                </tr><!-- end ngRepeat: eleve in liste_eleves| filter : recherche_nom --><tr ng-repeat="eleve in liste_eleves| filter : recherche_nom" class="ng-scope">
+                                    <td class="ng-binding">34</td>
+                                    <td class="ng-binding">MUTOMBO</td>
+                                    <td class="ng-binding">KAMANDA</td>
+                                    <td class="ng-binding"></td>
+                                    <td class="ng-binding">F </td> 
+                                    <td class="ng-binding">, 07/11/2016</td>
+                                    <td class="ng-binding"></td> 
+
+
+                                    <!-- ngIf: modifs == false -->
+
+                                    <!-- ngIf: modifs == false -->
+
+
+                                </tr><!-- end ngRepeat: eleve in liste_eleves| filter : recherche_nom --><tr ng-repeat="eleve in liste_eleves| filter : recherche_nom" class="ng-scope">
+                                    <td class="ng-binding">35</td>
+                                    <td class="ng-binding">MWENGA</td>
+                                    <td class="ng-binding">LUBOYA</td>
+                                    <td class="ng-binding"></td>
+                                    <td class="ng-binding">M </td> 
+                                    <td class="ng-binding">, 02/11/2016</td>
+                                    <td class="ng-binding"></td> 
+
+
+                                    <!-- ngIf: modifs == false -->
+
+                                    <!-- ngIf: modifs == false -->
+
+
+                                </tr><!-- end ngRepeat: eleve in liste_eleves| filter : recherche_nom --><tr ng-repeat="eleve in liste_eleves| filter : recherche_nom" class="ng-scope">
+                                    <td class="ng-binding">36</td>
+                                    <td class="ng-binding">NDOSIMAU</td>
+                                    <td class="ng-binding">WAMOTE</td>
+                                    <td class="ng-binding"></td>
+                                    <td class="ng-binding">F </td> 
+                                    <td class="ng-binding">, 07/11/2016</td>
+                                    <td class="ng-binding"></td> 
+
+
+                                    <!-- ngIf: modifs == false -->
+
+                                    <!-- ngIf: modifs == false -->
+
+
+                                </tr><!-- end ngRepeat: eleve in liste_eleves| filter : recherche_nom --><tr ng-repeat="eleve in liste_eleves| filter : recherche_nom" class="ng-scope">
+                                    <td class="ng-binding">37</td>
+                                    <td class="ng-binding">NTELA</td>
+                                    <td class="ng-binding">UMBA</td>
+                                    <td class="ng-binding"></td>
+                                    <td class="ng-binding">M </td> 
+                                    <td class="ng-binding">, 07/11/2016</td>
+                                    <td class="ng-binding"></td> 
+
+
+                                    <!-- ngIf: modifs == false -->
+
+                                    <!-- ngIf: modifs == false -->
+
+
+                                </tr><!-- end ngRepeat: eleve in liste_eleves| filter : recherche_nom --><tr ng-repeat="eleve in liste_eleves| filter : recherche_nom" class="ng-scope">
+                                    <td class="ng-binding">38</td>
+                                    <td class="ng-binding">NZASI</td>
+                                    <td class="ng-binding">NGOY</td>
+                                    <td class="ng-binding"></td>
+                                    <td class="ng-binding">M </td> 
+                                    <td class="ng-binding">, 07/11/2016</td>
+                                    <td class="ng-binding"></td> 
+
+
+                                    <!-- ngIf: modifs == false -->
+
+                                    <!-- ngIf: modifs == false -->
+
+
+                                </tr><!-- end ngRepeat: eleve in liste_eleves| filter : recherche_nom --><tr ng-repeat="eleve in liste_eleves| filter : recherche_nom" class="ng-scope">
+                                    <td class="ng-binding">39</td>
+                                    <td class="ng-binding">SAKINA</td>
+                                    <td class="ng-binding">KABE</td>
+                                    <td class="ng-binding"></td>
+                                    <td class="ng-binding">F </td> 
+                                    <td class="ng-binding">, 07/11/2016</td>
+                                    <td class="ng-binding"></td> 
+
+
+                                    <!-- ngIf: modifs == false -->
+
+                                    <!-- ngIf: modifs == false -->
+
+
+                                </tr><!-- end ngRepeat: eleve in liste_eleves| filter : recherche_nom --><tr ng-repeat="eleve in liste_eleves| filter : recherche_nom" class="ng-scope">
+                                    <td class="ng-binding">40</td>
+                                    <td class="ng-binding">SELEMANI</td>
+                                    <td class="ng-binding">MACHAKA</td>
+                                    <td class="ng-binding"></td>
+                                    <td class="ng-binding">F </td> 
+                                    <td class="ng-binding">, 07/11/2016</td>
+                                    <td class="ng-binding"></td> 
+
+
+                                    <!-- ngIf: modifs == false -->
+
+                                    <!-- ngIf: modifs == false -->
+
+
+                                </tr><!-- end ngRepeat: eleve in liste_eleves| filter : recherche_nom --><tr ng-repeat="eleve in liste_eleves| filter : recherche_nom" class="ng-scope">
+                                    <td class="ng-binding">41</td>
+                                    <td class="ng-binding">TSHIKA</td>
+                                    <td class="ng-binding">MBAYI</td>
+                                    <td class="ng-binding"></td>
+                                    <td class="ng-binding">F </td> 
+                                    <td class="ng-binding">, 07/11/2016</td>
+                                    <td class="ng-binding"></td> 
+
+
+                                    <!-- ngIf: modifs == false -->
+
+                                    <!-- ngIf: modifs == false -->
+
+
+                                </tr><!-- end ngRepeat: eleve in liste_eleves| filter : recherche_nom --><tr ng-repeat="eleve in liste_eleves| filter : recherche_nom" class="ng-scope">
+                                    <td class="ng-binding">42</td>
+                                    <td class="ng-binding">TUDIESHA</td>
+                                    <td class="ng-binding">KADIMA</td>
+                                    <td class="ng-binding"></td>
+                                    <td class="ng-binding">M </td> 
+                                    <td class="ng-binding">, 07/11/2016</td>
+                                    <td class="ng-binding"></td> 
+
+
+                                    <!-- ngIf: modifs == false -->
+
+                                    <!-- ngIf: modifs == false -->
+
+
+                                </tr><!-- end ngRepeat: eleve in liste_eleves| filter : recherche_nom -->
+
+                            </tbody>
+                        </table>
+
+	    <div id="__ig_wm__" class="ui-igtrialwatermark" style="position: fixed; bottom: 0px; right: 0px; z-index: 1000;">
+	    </div>
+	</body>
+</html>
